@@ -15,52 +15,90 @@ class MainActivity : AppCompatActivity() {
     }
     private var textWatcher: TextWatcher? = null
     private var focusedEditText: EditText? = null
-    private lateinit var editTexts: List<EditText>
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(binding.root)
-        initEditTexts()
+        initEditTextsFocusListeners()
         initTextWatcher()
         initClickListeners()
     }
 
     private fun clearEditTexts() {
-        editTexts.forEach {
-            it.text.clear()
+        binding.apply {
+            binaryEditText.text.clear()
+            octalEditText.text.clear()
+            decimalEditText.text.clear()
+            hexadecimalEditText.text.clear()
         }
     }
 
-    private fun initEditTexts() {
-        editTexts = listOf(
-            binding.etBinary,
-            binding.etOctal,
-            binding.etDecimal,
-            binding.etHexadecimal
-        )
-        for (et in editTexts) {
-            et.onFocusChangeListener = CustomFocusListener()
+    private fun initEditTextsFocusListeners() {
+        binding.apply {
+            binaryEditText.onFocusChangeListener = CustomFocusListener()
+            octalEditText.onFocusChangeListener = CustomFocusListener()
+            decimalEditText.onFocusChangeListener = CustomFocusListener()
+            hexadecimalEditText.onFocusChangeListener = CustomFocusListener()
         }
     }
+
 
     private fun initTextWatcher() {
         textWatcher = object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                val input = focusedEditText?.text.toString()
-                if (input.isEmpty()) return
-                binding.apply {
-                    when (focusedEditText?.id) {
-                        etBinary.id -> setOutputForEditTexts(input, etBinary.id, BINARY_RADIX)
-                        etOctal.id -> setOutputForEditTexts(input, etOctal.id, OCTAL_RADIX)
-                        etDecimal.id -> setOutputForEditTexts(input, etDecimal.id, DECIMAL_RADIX)
-                        etHexadecimal.id -> setOutputForEditTexts(input, etHexadecimal.id, HEXADECIMAL_RADIX)
-                    }
-                }
+                val input = focusedEditText?.text.toString().trim()
+                setOutputForEditTexts(input)
             }
 
             override fun afterTextChanged(s: Editable?) {}
 
+            private fun setOutputForEditTexts(input: String) {
+                if (input.isEmpty()) return
+
+                binding.apply {
+                    when (focusedEditText?.id) {
+                        binaryEditText.id -> setOutputForEditTextsExceptBinaryOne(input)
+                        octalEditText.id -> setOutputForEditTextsExceptOctalOne(input)
+                        decimalEditText.id -> setOutputForEditTextsExceptDecimalOne(input)
+                        hexadecimalEditText.id -> setOutputForEditTextsExceptHexadecimalOne(input)
+                    }
+                }
+            }
+
+            private fun setOutputForEditTextsExceptHexadecimalOne(input: String) {
+                binding.apply {
+                    octalEditText.setText(toOctal(input, HEXADECIMAL_RADIX))
+                    decimalEditText.setText(toDecimal(input, HEXADECIMAL_RADIX).toString())
+                    binaryEditText.setText(toBinary(input, HEXADECIMAL_RADIX))
+                }
+            }
+
+            private fun setOutputForEditTextsExceptDecimalOne(input: String) {
+                binding.apply {
+                    octalEditText.setText(toOctal(input, DECIMAL_RADIX))
+                    binaryEditText.setText(toBinary(input, DECIMAL_RADIX))
+                    hexadecimalEditText.setText(toHexadecimal(input, DECIMAL_RADIX))
+                }
+            }
+
+            private fun setOutputForEditTextsExceptOctalOne(input: String) {
+                binding.apply {
+                    binaryEditText.setText(toBinary(input, OCTAL_RADIX))
+                    decimalEditText.setText(toDecimal(input, OCTAL_RADIX).toString())
+                    hexadecimalEditText.setText(toHexadecimal(input, OCTAL_RADIX))
+                }
+            }
+
+            private fun setOutputForEditTextsExceptBinaryOne(input: String) {
+                binding.apply {
+                    octalEditText.setText(toOctal(input, BINARY_RADIX))
+                    decimalEditText.setText(toDecimal(input, BINARY_RADIX).toString())
+                    hexadecimalEditText.setText(toHexadecimal(input, BINARY_RADIX))
+                }
+            }
         }
     }
 
@@ -70,29 +108,6 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun ActivityMainBinding.setOutputForEditTexts(
-        input: String,
-        exceptId: Int,
-        radix: Int
-    ) {
-        etBinary.apply {
-            if (id != exceptId)
-                setText(toBinary(input, radix))
-        }
-        etOctal.apply {
-            if (id != exceptId)
-                setText(toOctal(input, radix))
-        }
-        etDecimal.apply {
-            if (id != exceptId)
-                setText(toDecimal(input, radix).toString())
-        }
-
-        etHexadecimal.apply {
-            if (id != exceptId)
-                setText(toHexadecimal(input, radix))
-        }
-    }
 
     inner class CustomFocusListener : View.OnFocusChangeListener {
         override fun onFocusChange(v: View?, hasFocus: Boolean) {
