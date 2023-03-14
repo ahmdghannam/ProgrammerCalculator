@@ -52,26 +52,21 @@ private fun decimalToBinary(decimal: String): String {
 
 private fun octalToBinary(octal: String): String {
     var decimal = 0
-    var power = 0
-    for (i in octal.length - 1 downTo 0) {
+    for ((power, i) in (octal.length - 1 downTo 0).withIndex()) {
         val digit = octal[i].toString().toInt()
         decimal += digit * 8.0.pow(power).toInt()
-        power++
     }
     return decimalToBinary(decimal.toString())
 }
 
 private fun hexadecimalToBinary(hexadecimal: String): String {
     var decimal = 0
-    var power = 0
-    for (i in hexadecimal.length - 1 downTo 0) {
-        val digit = hexadecimal[i]
-        val value = when (digit) {
+    for ((power, i) in (hexadecimal.length - 1 downTo 0).withIndex()) {
+        val value = when (val digit = hexadecimal[i]) {
             in '0'..'9' -> digit.toString().toInt()
-            else -> (digit.toUpperCase() - 'A' + 10)
+            else -> (digit.uppercaseChar() - 'A' + 10)
         }
         decimal += value * 16.0.pow(power).toInt()
-        power++
     }
     return decimalToBinary(decimal.toString())
 }
