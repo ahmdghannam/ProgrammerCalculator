@@ -56,11 +56,14 @@ class MainActivity : AppCompatActivity() {
 
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
                 val input = focusedEditText?.text.toString().trim().uppercase()
+
                 if (isValidInput(input)) {
                     removeEditTextsErrorMessagesIfExists()
                     setOutputForEditTexts(input)
+                } else {
+                    showErrorMessageAtTheInputEditText()
                 }
-                else showErrorMessageAtTheInputEditText()
+
             }
 
             override fun afterTextChanged(s: Editable?) {}
