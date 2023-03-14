@@ -56,7 +56,10 @@ class MainActivity : AppCompatActivity() {
 
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
                 val input = focusedEditText?.text.toString().trim().uppercase()
-                if (isValidInput(input)) setOutputForEditTexts(input)
+                if (isValidInput(input)) {
+                    removeEditTextsErrorMessagesIfExists()
+                    setOutputForEditTexts(input)
+                }
                 else showErrorMessageAtTheInputEditText()
             }
 
@@ -107,7 +110,6 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun setOutputForEditTexts(input: String) {
-        removeEditTextsErrorMessagesIfExists()
         binding.apply {
             when (focusedEditText?.id) {
                 binaryEditText.id -> setOutputForEditTextsExceptBinary(input)
