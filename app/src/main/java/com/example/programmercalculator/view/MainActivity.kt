@@ -79,8 +79,18 @@ class MainActivity : AppCompatActivity() {
             hexadecimalEditText.text.clear()
         }
     }
+
     private fun showErrorMessageAtTheInputEditText() {
         focusedEditText?.error = "the input is invalid"
+    }
+
+    private fun removeEditTextsErrorMessagesIfExists() {
+        binding.apply {
+            binaryEditText.error = null
+            octalEditText.error = null
+            decimalEditText.error = null
+            hexadecimalEditText.error = null
+        }
     }
 
     private fun isValidInput(input: String): Boolean {
@@ -97,6 +107,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun setOutputForEditTexts(input: String) {
+        removeEditTextsErrorMessagesIfExists()
         binding.apply {
             when (focusedEditText?.id) {
                 binaryEditText.id -> setOutputForEditTextsExceptBinary(input)
@@ -106,6 +117,7 @@ class MainActivity : AppCompatActivity() {
             }
         }
     }
+
 
     private fun setOutputForEditTextsExceptHexadecimal(input: String) {
         binding.apply {
@@ -150,7 +162,6 @@ class MainActivity : AppCompatActivity() {
 
         }
     }
-
 
 
 }
